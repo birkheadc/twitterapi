@@ -20,9 +20,9 @@ public class TweetController {
     }
 
     @PostMapping("")
-    public void createTweet(@RequestParam(name = "token") String token,
+    public void createTweet(@RequestHeader("Authorization") String auth,
                             @RequestParam(name = "contents") String contents) {
-        model.createTweet(token, contents);
+        model.createTweet(auth, contents);
     }
 
     @GetMapping("user/{userName}")

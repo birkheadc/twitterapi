@@ -1,37 +1,45 @@
 package me.birkheadc.twitterapi.tweet;
 
+import me.birkheadc.twitterapi.security.JwtTokenUtil;
 import me.birkheadc.twitterapi.user.User;
+import me.birkheadc.twitterapi.user.UserRepository;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 public class TweetModel {
 
-    private final TweetRepository repository;
+    private final TweetRepository tweetRepository;
 
-    public TweetModel(TweetRepository repository) {
-        this.repository = repository;
+    private final UserRepository userRepository;
+
+    private final JwtTokenUtil tokenUtil;
+
+    public TweetModel(TweetRepository tweetRepository, UserRepository userRepository, JwtTokenUtil tokenUtil) {
+        this.tweetRepository = tweetRepository;
+        this.userRepository = userRepository;
+        this.tokenUtil = tokenUtil;
     }
 
-    public void createTweet(String token, String contents) {
-        if (isAuthorized(token) == false) {
+    public void createTweet(String auth, String contents) {
+        User user = getUser(auth);
+        if (user == null) {
+            System.out.println("User not found.");
             return;
         }
-        Tweet tweet = new Tweet(getUser(token), contents);
-        repository.save(tweet);
+        Tweet tweet = new Tweet(user, contents);
+        tweetRepository.save(tweet);
     }
 
-    private boolean isAuthorized(String token) {
-        // TODO
-        return true;
-    }
-
-    private User getUser(String token) {
-        return null;
+    public User getUser(String auth) {
+        String userName = tokenUtil.getUsernameFromAuth(auth);
+        if (userName == null) {
+            return null;
+        }
+        User user = userRepository.findByUserName(userName);
+        return user;
     }
 
     public Iterable<Tweet> getTweetsByUserName(String userName) {
-        return repository.getAllByUserName(userName);
+        return tweetRepository.getAllByUserName(userName);
     }
 }
