@@ -2,8 +2,6 @@ package me.birkheadc.twitterapi.tweet;
 
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("tweet")
 public class TweetController {
@@ -14,15 +12,17 @@ public class TweetController {
         this.model = model;
     }
 
+//    @CrossOrigin(origins = "http://localhost:3000")
     @GetMapping("")
-    public String test() {
-        return "test";
+    public Iterable<Tweet> test() {
+        return model.getAllTweets();
     }
 
     @PostMapping("")
-    public void createTweet(@RequestHeader("Authorization") String auth,
-                            @RequestParam(name = "contents") String contents) {
-        model.createTweet(auth, contents);
+    public Tweet createTweet(@RequestHeader("Authorization") String auth,
+                            @RequestBody TweetContents contents) {
+        Tweet tweet = model.createTweet(auth, contents);
+        return tweet;
     }
 
     @GetMapping("user/{userName}")

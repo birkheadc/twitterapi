@@ -20,14 +20,15 @@ public class TweetModel {
         this.tokenUtil = tokenUtil;
     }
 
-    public void createTweet(String auth, String contents) {
+    public Tweet createTweet(String auth, TweetContents contents) {
         User user = getUser(auth);
         if (user == null) {
             System.out.println("User not found.");
-            return;
+            return null;
         }
-        Tweet tweet = new Tweet(user, contents);
+        Tweet tweet = new Tweet(user, contents.getContents());
         tweetRepository.save(tweet);
+        return tweet;
     }
 
     public User getUser(String auth) {
@@ -40,6 +41,10 @@ public class TweetModel {
     }
 
     public Iterable<Tweet> getTweetsByUserName(String userName) {
-        return tweetRepository.getAllByUserName(userName);
+        return tweetRepository.findByUserOrderByTimeDesc(userName);
+    }
+
+    public Iterable<Tweet> getAllTweets() {
+        return tweetRepository.findAllByOrderByTimeDesc();
     }
 }

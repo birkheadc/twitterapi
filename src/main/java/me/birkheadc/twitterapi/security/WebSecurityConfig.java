@@ -23,11 +23,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .cors().and()
                 .csrf().disable()
                 .addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/session").permitAll()
+                .antMatchers(HttpMethod.POST, "/session/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/tweet/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/session/**").permitAll()
+                .antMatchers(HttpMethod.POST,"/user/**").permitAll()
                 .anyRequest().authenticated();
     }
 }
